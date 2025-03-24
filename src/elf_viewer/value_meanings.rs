@@ -193,7 +193,6 @@ pub fn get_e_machine_meaning(val: u16) -> &'static str {
 	EM_STXP7X => "STMicroelectronics STxP7x family of configurable and extensible RISC processors",
 	EM_NDS32 => "Andes Technology compact code size embedded RISC processor family",
 	EM_ECOG1 => "Cyan Technology eCOG1X family",
-	EM_ECOG1X => "Cyan Technology eCOG1X family",
 	EM_MAXQ30 => "Dallas Semiconductor MAXQ30 Core Micro-controllers",
 	EM_XIMO16 => "New Japan Radio (NJR) 16-bit DSP Processor",
 	EM_MANIK => "M2000 Reconfigurable RISC Microprocessor",
