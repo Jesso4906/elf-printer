@@ -10,7 +10,12 @@ fn main() {
     
     let path: std::path::PathBuf = std::path::PathBuf::from(&args[1]);
     let file_bytes: Vec<u8> = std::fs::read(path).expect("Failed to read file.");
-    
+   
+    if !elf_viewer::check_magic(&file_bytes) {
+        println!("Invalid ELF binary.");
+        return;
+    }
+
     elf_viewer::print_file_header(&file_bytes);
     
     return;
