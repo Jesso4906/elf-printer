@@ -29,7 +29,11 @@ fn print_file_header_64(header: &Elf64_Ehdr) {
     println!("Architecture (e_ident[EI_CLASS]): {} ({:#04X})", value_meanings::get_ei_class_meaning(header.e_ident[EI_CLASS]), header.e_ident[EI_CLASS]);
     println!("Data encoding (e_ident[EI_DATA]): {} ({:#04X})", value_meanings::get_ei_data_meaning(header.e_ident[EI_DATA]), header.e_ident[EI_DATA]);
     println!("ELF specification version (e_ident[EI_VERSION]): {} ({:#04X})", value_meanings::get_ei_version_meaning(header.e_ident[EI_VERSION]), header.e_ident[EI_VERSION]);
-    println!("Target OS and ABI (e_ident[EI_OSABI]): {} ({:#04X})\n", value_meanings::get_ei_osabi_meaning(header.e_ident[EI_OSABI]), header.e_ident[EI_OSABI]);
+    println!("Target OS and ABI (e_ident[EI_OSABI]): {} ({:#04X})", value_meanings::get_ei_osabi_meaning(header.e_ident[EI_OSABI]), header.e_ident[EI_OSABI]);
+    println!("ABI version: (e_ident[EI_ABIVERSRION]): {:#04X}", header.e_ident[EI_ABIVERSION]);
+    println!("Start of padding (e_ident[EI_PAD]): {:#04X}", header.e_ident[EI_PAD]);
+    println!("Object file type (e_type): {} ({:#06X})", value_meanings::get_e_type_meaning(header.e_type), header.e_type);
+    println!("Required architecture (e_machine): {} ({:#06X})", value_meanings::get_e_machine_meaning(header.e_machine), header.e_machine);
 }
 
 fn print_file_header_32(header: &Elf32_Ehdr) {
