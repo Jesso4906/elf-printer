@@ -36,16 +36,16 @@ fn print_file_header_64(header: &Elf64_Ehdr) {
     println!("Object file type (e_type): {} ({:#06X})", value_meanings::get_e_type_meaning(header.e_type), header.e_type);
     println!("Required architecture (e_machine): {} ({:#06X})", value_meanings::get_e_machine_meaning(header.e_machine), header.e_machine);
     println!("File version (e_version): {} ({:#04X})", value_meanings::get_ei_version_meaning(header.e_version as u8), header.e_version);
-    println!("Entry point VA (e_entry): {:#X}", header.e_entry);
-    println!("Program header table file offset (e_phoff): {:#X}", header.e_phoff);
-    println!("Section header table file offset (e_shoff): {:#X}", header.e_shoff);
-    println!("Processor-specific flags (e_flags): {:#X}", header.e_flags);
-    println!("ELF header size (e_ehsize): {:#X}", header.e_ehsize);
-    println!("Size of a program header entry (e_phentsize): {:#X}", header.e_phentsize);
-    println!("Number of program header entries (e_phnum): {:#X}", header.e_phnum);
-    println!("Size of a section header entry (e_shentsize): {:#X}", header.e_shentsize);
-    println!("Number of section header entries (e_shnum): {:#X}", header.e_shnum);
-    println!("Section header table index of section name string table (e_shstrndx): {:#X}", header.e_shstrndx);
+    println!("Entry point VA (e_entry): {:#04X}", header.e_entry);
+    println!("Program header table file offset (e_phoff): {:#04X}", header.e_phoff);
+    println!("Section header table file offset (e_shoff): {:#04X}", header.e_shoff);
+    println!("Processor-specific flags (e_flags): {:#04X}", header.e_flags);
+    println!("ELF header size (e_ehsize): {:#04X}", header.e_ehsize);
+    println!("Size of a program header entry (e_phentsize): {:#04X}", header.e_phentsize);
+    println!("Number of program header entries (e_phnum): {:#04X}", header.e_phnum);
+    println!("Size of a section header entry (e_shentsize): {:#04X}", header.e_shentsize);
+    println!("Number of section header entries (e_shnum): {:#04X}", header.e_shnum);
+    println!("Section header table index of section name string table (e_shstrndx): {:#04X}", header.e_shstrndx);
 }
 
 fn print_file_header_32(header: &Elf32_Ehdr) {
@@ -60,14 +60,14 @@ fn print_file_header_32(header: &Elf32_Ehdr) {
     println!("Object file type (e_type): {} ({:#06X})", value_meanings::get_e_type_meaning(header.e_type), header.e_type);
     println!("Required architecture (e_machine): {} ({:#06X})", value_meanings::get_e_machine_meaning(header.e_machine), header.e_machine);
     println!("File version (e_version): {} ({:#04X})", value_meanings::get_ei_version_meaning(header.e_version as u8), header.e_version);
-    println!("Entry point VA (e_entry): {:#X}", header.e_entry);
-    println!("Program header table file offset (e_phoff): {:#X}", header.e_phoff);
-    println!("Section header table file offset (e_shoff): {:#X}", header.e_shoff);
-    println!("Processor-specific flags (e_flags): {:#X}", header.e_flags);
-    println!("ELF header size (e_ehsize): {:#X}", header.e_ehsize);
-    println!("Size of a program header entry (e_phentsize): {:#X}", header.e_phentsize);
-    println!("Number of program header entries (e_phnum): {:#X}", header.e_phnum);
-    println!("Size of a section header entry (e_shentsize): {:#X}", header.e_shentsize);
-    println!("Number of section header entries (e_shnum): {:#X}", header.e_shnum);
-    println!("Section header table index of section name string table (e_shstrndx): {:#X}", header.e_shstrndx);
+    println!("Entry point VA (e_entry): {:#04X}", header.e_entry);
+    println!("Program header table file offset (e_phoff): {:#04X}", header.e_phoff);
+    println!("Section header table file offset (e_shoff): {:#04X}", header.e_shoff);
+    println!("Processor-specific flags (e_flags): {:#04X}", header.e_flags);
+    println!("ELF header size (e_ehsize): {:#04X}", header.e_ehsize);
+    println!("Size of a program header entry (e_phentsize): {:#04X}", header.e_phentsize);
+    println!("Number of program header entries (e_phnum): {:#04X}", header.e_phnum);
+    println!("Size of a section header entry (e_shentsize): {:#04X}", header.e_shentsize);
+    println!("Number of section header entries (e_shnum): {:#04X}", header.e_shnum);
+    println!("Section header table index of section name string table (e_shstrndx): {:#04X}", header.e_shstrndx);
 }
