@@ -40,20 +40,47 @@ pub fn print_program_header(bytes: &Vec<u8>, index: u16) {
             while i < elf_header.e_phnum {
                 let p_offset: isize = (elf_header.e_phoff + (i * elf_header.e_phentsize) as u64).try_into().unwrap();
                 let program_header: Elf64_Phdr = unsafe { std::ptr::read((bytes.as_ptr().offset(p_offset)) as *const Elf64_Phdr) };
-                print_program_header_64(&program_header);
+                print_program_header_64(&program_header, i);
                 i = i + 1;
             }
         } else if index < elf_header.e_phnum {
                 let p_offset: isize = (elf_header.e_phoff + (index * elf_header.e_phentsize) as u64).try_into().unwrap();
                 let program_header: Elf64_Phdr = unsafe { std::ptr::read((bytes.as_ptr().offset(p_offset)) as *const Elf64_Phdr) };
-                print_program_header_64(&program_header);
+                print_program_header_64(&program_header, index);
         } else {
             println!("Invalid index.");
             return;
         }
     } else if bytes.len() >= size_of::<Elf32_Ehdr>() && bytes[EI_CLASS] == ELFCLASS32 {
-        // let elf_header: Elf32_Ehdr = unsafe { std::ptr::read(bytes.as_ptr() as *const Elf32_Ehdr) };
-        // print_program_header_32(&header, index);
+        let elf_header: Elf32_Ehdr = unsafe { std::ptr::read(bytes.as_ptr() as *const Elf32_Ehdr) };
+
+        if elf_header.e_phoff == 0 {
+            println!("File has no program header table.");
+            return;
+        }
+
+        if bytes.len() < (elf_header.e_phnum * elf_header.e_phentsize) as usize {
+            println!("Not enough bytes in buffer.");
+            return;
+        }
+
+        if index == u16::MAX {
+            // print all
+            let mut  i: u16 = 0;
+            while i < elf_header.e_phnum {
+                let p_offset: isize = (elf_header.e_phoff + (i * elf_header.e_phentsize) as u32).try_into().unwrap();
+                let program_header: Elf32_Phdr = unsafe { std::ptr::read((bytes.as_ptr().offset(p_offset)) as *const Elf32_Phdr) };
+                print_program_header_32(&program_header, i);
+                i = i + 1;
+            }
+        } else if index < elf_header.e_phnum {
+                let p_offset: isize = (elf_header.e_phoff + (index * elf_header.e_phentsize) as u32).try_into().unwrap();
+                let program_header: Elf32_Phdr = unsafe { std::ptr::read((bytes.as_ptr().offset(p_offset)) as *const Elf32_Phdr) };
+                print_program_header_32(&program_header, index);
+        } else {
+            println!("Invalid index.");
+            return;
+        }
     } else {
         println!("File has unknown architecture or bytes buffer is too small.");
     }
@@ -78,10 +105,10 @@ fn print_elf_header_64(header: &Elf64_Ehdr) {
     println!("Processor-specific flags (e_flags): {:#04X}", header.e_flags);
     println!("ELF header size (e_ehsize): {:#04X}", header.e_ehsize);
     println!("Size of a program header entry (e_phentsize): {:#04X}", header.e_phentsize);
-    println!("Number of program header entries (e_phnum): {:#04X}", header.e_phnum);
+    println!("Number of program header entries (e_phnum): {}", header.e_phnum);
     println!("Size of a section header entry (e_shentsize): {:#04X}", header.e_shentsize);
-    println!("Number of section header entries (e_shnum): {:#04X}", header.e_shnum);
-    println!("Section header table index of section name string table (e_shstrndx): {:#04X}", header.e_shstrndx);
+    println!("Number of section header entries (e_shnum): {}", header.e_shnum);
+    println!("Section header table index of section name string table (e_shstrndx): {}", header.e_shstrndx);
     println!();
 }
 
@@ -104,23 +131,39 @@ fn print_elf_header_32(header: &Elf32_Ehdr) {
     println!("Processor-specific flags (e_flags): {:#04X}", header.e_flags);
     println!("ELF header size (e_ehsize): {:#04X}", header.e_ehsize);
     println!("Size of a program header entry (e_phentsize): {:#04X}", header.e_phentsize);
-    println!("Number of program header entries (e_phnum): {:#04X}", header.e_phnum);
+    println!("Number of program header entries (e_phnum): {}", header.e_phnum);
     println!("Size of a section header entry (e_shentsize): {:#04X}", header.e_shentsize);
-    println!("Number of section header entries (e_shnum): {:#04X}", header.e_shnum);
-    println!("Section header table index of section name string table (e_shstrndx): {:#04X}", header.e_shstrndx);
+    println!("Number of section header entries (e_shnum): {}", header.e_shnum);
+    println!("Section header table index of section name string table (e_shstrndx): {}", header.e_shstrndx);
     println!();
 }
 
-fn print_program_header_64(header: &Elf64_Phdr) {
+fn print_program_header_64(header: &Elf64_Phdr, index: u16) {
     println!();
     println!("Program header 64-bit (Elf64_Phdr)");
-    println!("Offset: {:#X}", header.p_offset);
+    println!("Index: {}", index);
+    println!("Segment type (p_type): {} ({:#04X})", value_meanings::get_p_type_meaning(header.p_type), header.p_type);
+    println!("File offset (p_offset): {:#04X}", header.p_offset);
+    println!("Virtual address (p_vaddr): {:#04X}", header.p_vaddr);
+    println!("Physical address (p_paddr): {:#04X}", header.p_paddr);
+    println!("Size of file image (p_filesz): {:#04X}", header.p_filesz);
+    println!("Size of memory image (p_memsz): {:#04X}", header.p_memsz);
+    println!("Flags (p_flags): {} ({:#04X})", value_meanings::get_p_flags_meaning(header.p_flags), header.p_flags);
+    println!("Alignment (p_align): {:#04X}", header.p_align);
     println!();
 }
 
-fn print_program_header_32(header: &Elf32_Phdr) {
+fn print_program_header_32(header: &Elf32_Phdr, index: u16) {
     println!();
     println!("Program header 32-bit (Elf32_Phdr)");
-    println!("Offset: {:#X}", header.p_offset);
+    println!("Index: {}", index);
+    println!("Segment type (p_type): {} ({:#04X})", value_meanings::get_p_type_meaning(header.p_type), header.p_type);
+    println!("File offset (p_offset): {:#04X}", header.p_offset);
+    println!("Virtual address (p_vaddr): {:#04X}", header.p_vaddr);
+    println!("Physical address (p_paddr): {:#04X}", header.p_paddr);
+    println!("Size of file image (p_filesz): {:#04X}", header.p_filesz);
+    println!("Size of memory image (p_memsz): {:#04X}", header.p_memsz);
+    println!("Flags (p_flags): {} ({:#04X})", value_meanings::get_p_flags_meaning(header.p_flags), header.p_flags);
+    println!("Alignment (p_align): {:#04X}", header.p_align);
     println!();
 }

@@ -267,10 +267,34 @@ pub fn get_p_type_meaning(val: u32) -> &'static str {
         PT_GNU_STACK => "Indicates stack executability",
         PT_GNU_RELRO => "Read-only after relocation",
         PT_GNU_PROPERTY => "The segment contains .note.gnu.property section",
-        PT_LOOS => "Operating system-specific semantics.",
-        PT_HIOS => "Operating system-specific semantics.",
-        PT_LOPROC => "Processor-specific semantics.",
-        PT_HIPROC => "Processor-specific semantics.",
+        PT_LOOS..=PT_HIOS => "Operating system-specific semantics",
+        PT_LOPROC..=PT_HIPROC => "Processor-specific semantics",
         _ => ""
     }
+}
+
+pub fn get_p_flags_meaning(val: u32) -> String {
+    let mut result: String = String::from("");
+
+    if val & PF_X == PF_X {
+        result.push_str("Executable");
+    }
+
+    if val & PF_R == PF_R {
+        if result.len() > 0 {
+            result.push_str(", readable");
+        } else {
+            result.push_str("Readable");
+        }
+    }
+
+    if val & PF_W == PF_W {
+        if result.len() > 0 {
+            result.push_str(", writable");
+        } else {
+            result.push_str("Writable");
+        }
+    }
+
+    return result;
 }
