@@ -24,9 +24,9 @@ fn main() {
     if args.len() == 2 || args[1] == "-eh" || args[1] == "--elf-header" {
         elf_viewer::print_elf_header(&file_bytes);
     } else if args[1] == "-ph" || args[1] == "--program-header" {
-        let mut index: i32 = match args[2].parse() {
+        let index: u16 = match args[2].parse() {
             Ok(n) => { n },
-            Err(_) => { -1 }
+            Err(_) => { u16::MAX }
         };
 
         elf_viewer::print_program_header(&file_bytes, index);

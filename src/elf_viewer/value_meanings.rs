@@ -252,3 +252,25 @@ pub fn get_e_machine_meaning(val: u16) -> &'static str {
         _ => ""
     }
 }
+
+pub fn get_p_type_meaning(val: u32) -> &'static str {
+    match val {
+        PT_NULL => "Unused",
+        PT_LOAD => "Loadable program segment",
+        PT_DYNAMIC => "Dynamic linking information",
+        PT_INTERP => "Program interpreter",
+        PT_NOTE => "Auxiliary information",
+        PT_SHLIB => "Unused",
+        PT_PHDR => "The program header table",
+        PT_TLS => "Thread-local storage segment",
+        PT_GNU_EH_FRAME => "GCC .eh_frame_hdr segment",
+        PT_GNU_STACK => "Indicates stack executability",
+        PT_GNU_RELRO => "Read-only after relocation",
+        PT_GNU_PROPERTY => "The segment contains .note.gnu.property section",
+        PT_LOOS => "Operating system-specific semantics.",
+        PT_HIOS => "Operating system-specific semantics.",
+        PT_LOPROC => "Processor-specific semantics.",
+        PT_HIPROC => "Processor-specific semantics.",
+        _ => ""
+    }
+}
