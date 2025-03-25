@@ -22,7 +22,14 @@ fn main() {
     }
 
     if args.len() == 2 || args[1] == "-eh" || args[1] == "--elf-header" {
-        elf_viewer::print_file_header(&file_bytes);
+        elf_viewer::print_elf_header(&file_bytes);
+    } else if args[1] == "-ph" || args[1] == "--program-header" {
+        let mut index: i32 = match args[2].parse() {
+            Ok(n) => { n },
+            Err(_) => { -1 }
+        };
+
+        elf_viewer::print_program_header(&file_bytes, index);
     }
     
     return;

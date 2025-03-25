@@ -1,12 +1,13 @@
 mod value_meanings;
 use elf::abi::*;
 use elf::file::*;
+use elf::section::*;
 
 pub fn check_magic(bytes: &Vec<u8>) -> bool {
     return bytes.len() >= 4 && bytes[0] == 0x7F && bytes[1] == b'E' && bytes[2] == b'L' && bytes[3] == b'F';
 }
 
-pub fn print_file_header(bytes: &Vec<u8>) {
+pub fn print_elf_header(bytes: &Vec<u8>) {
     if !check_magic(bytes) {
         println!("Invalid ELF binary.");
         return;
@@ -14,17 +15,16 @@ pub fn print_file_header(bytes: &Vec<u8>) {
 
     if bytes.len() >= size_of::<Elf64_Ehdr>() && bytes[EI_CLASS] == ELFCLASS64 {
         let header: Elf64_Ehdr = unsafe { std::ptr::read(bytes.as_ptr() as *const Elf64_Ehdr) };
-        print_file_header_64(&header);
+        print_elf_header_64(&header);
     } else if bytes.len() >= size_of::<Elf32_Ehdr>() && bytes[EI_CLASS] == ELFCLASS32 {
         let header: Elf32_Ehdr = unsafe { std::ptr::read(bytes.as_ptr() as *const Elf32_Ehdr) };
-        print_file_header_32(&header);
-    }
-    else {
+        print_elf_header_32(&header);
+    } else {
         println!("File has unknown architecture or bytes buffer is too small.");
     }
 }
 
-fn print_file_header_64(header: &Elf64_Ehdr) {
+fn print_elf_header_64(header: &Elf64_Ehdr) {
     println!("ELF header 64-bit (Elf64_Ehdr)");
     println!("Magic (e_ident[0..4]): 0x7F ELF"); // assuming the header is valid
     println!("Architecture (e_ident[EI_CLASS]): {} ({:#04X})", value_meanings::get_ei_class_meaning(header.e_ident[EI_CLASS]), header.e_ident[EI_CLASS]);
@@ -48,7 +48,7 @@ fn print_file_header_64(header: &Elf64_Ehdr) {
     println!("Section header table index of section name string table (e_shstrndx): {:#04X}", header.e_shstrndx);
 }
 
-fn print_file_header_32(header: &Elf32_Ehdr) {
+fn print_elf_header_32(header: &Elf32_Ehdr) {
     println!("ELF header 32-bit (Elf32_Ehdr)");
     println!("Magic (e_ident[0..4]): 0x7F ELF"); // assuming the header is valid
     println!("Architecture (e_ident[EI_CLASS]): {} ({:#04X})", value_meanings::get_ei_class_meaning(header.e_ident[EI_CLASS]), header.e_ident[EI_CLASS]);
