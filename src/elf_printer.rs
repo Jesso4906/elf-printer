@@ -105,6 +105,9 @@ pub fn print_section_header(bytes: &Vec<u8>, index: u16) {
             println!("Not enough bytes in buffer.");
             return;
         }
+        
+        let strs_offset: isize = (elf_header.e_shoff + (elf_header.e_shstrndx * elf_header.e_shentsize) as u64).try_into().unwrap();
+        let strs_section_header: Elf64_Shdr = unsafe { std::ptr::read((bytes.as_ptr().offset(strs_offset)) as *const Elf64_Shdr) };
 
         if index == u16::MAX {
             // print all
@@ -112,13 +115,19 @@ pub fn print_section_header(bytes: &Vec<u8>, index: u16) {
             while i < elf_header.e_shnum {
                 let s_offset: isize = (elf_header.e_shoff + (i * elf_header.e_shentsize) as u64).try_into().unwrap();
                 let section_header: Elf64_Shdr = unsafe { std::ptr::read((bytes.as_ptr().offset(s_offset)) as *const Elf64_Shdr) };
-                print_section_header_64(&section_header, i);
+
+                let strndx: usize = (strs_section_header.sh_offset + section_header.sh_name as u64) as usize;
+                let section_name: &str = get_string_from_vec(&bytes, strndx);
+                print_section_header_64(&section_header, i, section_name);
                 i = i + 1;
             }
         } else if index < elf_header.e_shnum {
                 let s_offset: isize = (elf_header.e_shoff + (index * elf_header.e_shentsize) as u64).try_into().unwrap();
                 let section_header: Elf64_Shdr = unsafe { std::ptr::read((bytes.as_ptr().offset(s_offset)) as *const Elf64_Shdr) };
-                print_section_header_64(&section_header, index);
+
+                let strndx: usize = (strs_section_header.sh_offset + section_header.sh_name as u64) as usize;
+                let section_name: &str = get_string_from_vec(&bytes, strndx);
+                print_section_header_64(&section_header, index, section_name);
         } else {
             println!("Invalid index.");
             return;
@@ -136,19 +145,28 @@ pub fn print_section_header(bytes: &Vec<u8>, index: u16) {
             return;
         }
 
+        let strs_offset: isize = (elf_header.e_shoff + (elf_header.e_shstrndx * elf_header.e_shentsize) as u32).try_into().unwrap();
+        let strs_section_header: Elf32_Shdr = unsafe { std::ptr::read((bytes.as_ptr().offset(strs_offset)) as *const Elf32_Shdr) };
+
         if index == u16::MAX {
             // print all
             let mut  i: u16 = 0;
             while i < elf_header.e_shnum {
                 let s_offset: isize = (elf_header.e_shoff + (i * elf_header.e_shentsize) as u32).try_into().unwrap();
                 let section_header: Elf32_Shdr = unsafe { std::ptr::read((bytes.as_ptr().offset(s_offset)) as *const Elf32_Shdr) };
-                print_section_header_32(&section_header, i);
+
+                let strndx: usize = (strs_section_header.sh_offset + section_header.sh_name as u32) as usize;
+                let section_name: &str = get_string_from_vec(bytes, strndx);
+                print_section_header_32(&section_header, i, section_name);
                 i = i + 1;
             }
         } else if index < elf_header.e_shnum {
                 let s_offset: isize = (elf_header.e_shoff + (index * elf_header.e_shentsize) as u32).try_into().unwrap();
                 let section_header: Elf32_Shdr = unsafe { std::ptr::read((bytes.as_ptr().offset(s_offset)) as *const Elf32_Shdr) };
-                print_section_header_32(&section_header, index);
+
+                let strndx: usize = (strs_section_header.sh_offset + section_header.sh_name as u32) as usize;
+                let section_name: &str = get_string_from_vec(bytes, strndx);
+                print_section_header_32(&section_header, index, section_name);
         } else {
             println!("Invalid index.");
             return;
@@ -240,11 +258,12 @@ fn print_program_header_32(header: &Elf32_Phdr, index: u16) {
     println!();
 }
 
-fn print_section_header_64(header: &Elf64_Shdr, index: u16) {
+fn print_section_header_64(header: &Elf64_Shdr, index: u16, name: &str) {
     println!();
     println!("Section header 64-bit (Elf64_Shdr)");
     println!("Index: {}", index);
     println!("Name index (sh_name): {}", header.sh_name);
+    println!("Section name: {}", name);
     println!("Section type (sh_type): {} ({:#04X})", value_meanings::get_sh_type_meaning(header.sh_type), header.sh_type);
     println!("Section flags (sh_flags): {} ({:#04X})", value_meanings::get_sh_flags_meaning(header.sh_flags as u32), header.sh_flags);
     println!("Address (sh_addr): {:#04X}", header.sh_addr);
@@ -257,11 +276,12 @@ fn print_section_header_64(header: &Elf64_Shdr, index: u16) {
     println!();
 }
 
-fn print_section_header_32(header: &Elf32_Shdr, index: u16) {
+fn print_section_header_32(header: &Elf32_Shdr, index: u16, name: &str) {
     println!();
     println!("Section header 32-bit (Elf32_Shdr)");
     println!("Index: {}", index);
     println!("Name index (sh_name): {}", header.sh_name);
+    println!("Section name: {}", name);
     println!("Section type (sh_type): {} ({:#04X})", value_meanings::get_sh_type_meaning(header.sh_type), header.sh_type);
     println!("Section flags (sh_flags): {} ({:#04X})", value_meanings::get_sh_flags_meaning(header.sh_flags as u32), header.sh_flags);
     println!("Address (sh_addr): {:#04X}", header.sh_addr);
@@ -272,4 +292,13 @@ fn print_section_header_32(header: &Elf32_Shdr, index: u16) {
     println!("Alignment (sh_addralign): {:#04X}", header.sh_addralign);
     println!("Size of an entry (sh_entsize): {:#04X}", header.sh_entsize);
     println!();
+}
+
+fn get_string_from_vec(bytes: &Vec<u8>, start: usize) -> &str {
+    let mut end: usize = start;
+    while end < bytes.len() && bytes[end] != 0 {
+        end = end + 1;
+    }
+
+    return std::str::from_utf8(&bytes[start..end]).expect("Error converting bytes to string.");
 }
