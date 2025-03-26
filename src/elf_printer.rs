@@ -1,8 +1,14 @@
 mod value_meanings;
 use elf::abi::*;
-use elf::file::*;
+
+use libc::Elf64_Ehdr;
+use libc::Elf32_Ehdr;
+
 use libc::Elf64_Phdr;
 use libc::Elf32_Phdr;
+
+use libc::Elf64_Shdr;
+use libc::Elf32_Shdr;
 
 pub fn check_magic(bytes: &Vec<u8>) -> bool {
     return bytes.len() >= 4 && bytes[0] == 0x7F && bytes[1] == b'E' && bytes[2] == b'L' && bytes[3] == b'F';
@@ -77,6 +83,72 @@ pub fn print_program_header(bytes: &Vec<u8>, index: u16) {
                 let p_offset: isize = (elf_header.e_phoff + (index * elf_header.e_phentsize) as u32).try_into().unwrap();
                 let program_header: Elf32_Phdr = unsafe { std::ptr::read((bytes.as_ptr().offset(p_offset)) as *const Elf32_Phdr) };
                 print_program_header_32(&program_header, index);
+        } else {
+            println!("Invalid index.");
+            return;
+        }
+    } else {
+        println!("File has unknown architecture or bytes buffer is too small.");
+    }
+}
+
+pub fn print_section_header(bytes: &Vec<u8>, index: u16) {
+    if bytes.len() >= size_of::<Elf64_Ehdr>() && bytes[EI_CLASS] == ELFCLASS64 {
+        let elf_header: Elf64_Ehdr = unsafe { std::ptr::read(bytes.as_ptr() as *const Elf64_Ehdr) };
+
+        if elf_header.e_shoff == 0 {
+            println!("File has no program header table.");
+            return;
+        }
+
+        if bytes.len() < (elf_header.e_shnum * elf_header.e_shentsize) as usize {
+            println!("Not enough bytes in buffer.");
+            return;
+        }
+
+        if index == u16::MAX {
+            // print all
+            let mut  i: u16 = 0;
+            while i < elf_header.e_shnum {
+                let s_offset: isize = (elf_header.e_shoff + (i * elf_header.e_shentsize) as u64).try_into().unwrap();
+                let section_header: Elf64_Shdr = unsafe { std::ptr::read((bytes.as_ptr().offset(s_offset)) as *const Elf64_Shdr) };
+                print_section_header_64(&section_header, i);
+                i = i + 1;
+            }
+        } else if index < elf_header.e_shnum {
+                let s_offset: isize = (elf_header.e_shoff + (index * elf_header.e_shentsize) as u64).try_into().unwrap();
+                let section_header: Elf64_Shdr = unsafe { std::ptr::read((bytes.as_ptr().offset(s_offset)) as *const Elf64_Shdr) };
+                print_section_header_64(&section_header, index);
+        } else {
+            println!("Invalid index.");
+            return;
+        }
+    } else if bytes.len() >= size_of::<Elf32_Ehdr>() && bytes[EI_CLASS] == ELFCLASS32 {
+        let elf_header: Elf32_Ehdr = unsafe { std::ptr::read(bytes.as_ptr() as *const Elf32_Ehdr) };
+
+        if elf_header.e_shoff == 0 {
+            println!("File has no program header table.");
+            return;
+        }
+
+        if bytes.len() < (elf_header.e_shnum * elf_header.e_shentsize) as usize {
+            println!("Not enough bytes in buffer.");
+            return;
+        }
+
+        if index == u16::MAX {
+            // print all
+            let mut  i: u16 = 0;
+            while i < elf_header.e_shnum {
+                let s_offset: isize = (elf_header.e_shoff + (i * elf_header.e_shentsize) as u32).try_into().unwrap();
+                let section_header: Elf32_Shdr = unsafe { std::ptr::read((bytes.as_ptr().offset(s_offset)) as *const Elf32_Shdr) };
+                print_section_header_32(&section_header, i);
+                i = i + 1;
+            }
+        } else if index < elf_header.e_shnum {
+                let s_offset: isize = (elf_header.e_shoff + (index * elf_header.e_shentsize) as u32).try_into().unwrap();
+                let section_header: Elf32_Shdr = unsafe { std::ptr::read((bytes.as_ptr().offset(s_offset)) as *const Elf32_Shdr) };
+                print_section_header_32(&section_header, index);
         } else {
             println!("Invalid index.");
             return;
@@ -165,5 +237,23 @@ fn print_program_header_32(header: &Elf32_Phdr, index: u16) {
     println!("Size of memory image (p_memsz): {:#04X}", header.p_memsz);
     println!("Flags (p_flags): {} ({:#04X})", value_meanings::get_p_flags_meaning(header.p_flags), header.p_flags);
     println!("Alignment (p_align): {:#04X}", header.p_align);
+    println!();
+}
+
+fn print_section_header_64(header: &Elf64_Shdr, index: u16) {
+    println!();
+    println!("Section header 64-bit (Elf64_Shdr)");
+    println!("Index: {}", index);
+    println!("Name index (sh_name): {}", header.sh_name);
+    println!("Section type (sh_type): {} ({:#04X})", value_meanings::get_sh_type_meaning(header.sh_type), header.sh_name);
+    println!();
+}
+
+fn print_section_header_32(header: &Elf32_Shdr, index: u16) {
+    println!();
+    println!("Section header 32-bit (Elf32_Shdr)");
+    println!("Index: {}", index);
+    println!("Name index (sh_name): {}", header.sh_name);
+    println!("Section type (sh_type): {} ({:#04X})", value_meanings::get_sh_type_meaning(header.sh_type), header.sh_name);
     println!();
 }

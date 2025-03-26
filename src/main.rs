@@ -30,6 +30,13 @@ fn main() {
         };
 
         elf_printer::print_program_header(&file_bytes, index);
+    } else if args[1] == "-sh" || args[1] == "--section-header" {
+        let index: u16 = match args[2].parse() {
+            Ok(n) => { n },
+            Err(_) => { u16::MAX }
+        };
+
+        elf_printer::print_section_header(&file_bytes, index);
     }
     
     return;
@@ -47,4 +54,5 @@ fn print_help() {
     println!("-h, --help: print this menu.");
     println!("-eh, --elf-header: display information from the file's ELF header.");
     println!("-ph, --program-header [INDEX]: display information about a program header by index. If no index is provided, all program headers will be printed.");
+    println!("-sh, --section-header [INDEX]: display information about a section header by index. If no index is provided, all section headers will be printed.");
 }

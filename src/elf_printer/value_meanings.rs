@@ -298,3 +298,37 @@ pub fn get_p_flags_meaning(val: u32) -> String {
 
     return result;
 }
+
+pub fn get_sh_type_meaning(val: u32) -> &'static str {
+    match val {
+        SHT_NULL => "Inactive section with undefined values",
+        SHT_PROGBITS => "Information defined by the program, includes executable code and data",
+        SHT_SYMTAB => "Section data contains a symbol table",
+        SHT_STRTAB => "Section data contains a string table",
+        SHT_RELA => "Section data contains relocation entries with explicit addends",
+        SHT_HASH => "Section data contains a symbol hash table. Must be present for dynamic linking",
+        SHT_DYNAMIC => "Section data contains information for dynamic linking",
+        SHT_NOTE => "Section data contains information that marks the file in some way",
+        SHT_NOBITS => "Section data occupies no space in the file but otherwise resembles SHT_PROGBITS",
+        SHT_REL => "Section data contains relocation entries without explicit addends",
+        SHT_SHLIB => "Section is reserved but has unspecified semantics",
+        SHT_DYNSYM => "Section data contains a minimal set of dynamic linking symbols",
+        SHT_INIT_ARRAY => "Section data contains an array of constructors",
+        SHT_FINI_ARRAY => "Section data contains an array of destructors",
+        SHT_PREINIT_ARRAY => "Section data contains an array of pre-constructors",
+        SHT_GROUP => "Section group",
+        SHT_SYMTAB_SHNDX => "Extended symbol table section index",
+        SHT_GNU_ATTRIBUTES => "Object attributes",
+        SHT_GNU_HASH => "GNU-style hash section",
+        SHT_GNU_LIBLIST => "Pre-link library list",
+        SHT_GNU_VERDEF => "Version definition section",
+        SHT_GNU_VERNEED => "Version needs section",
+        SHT_GNU_VERSYM => "Version symbol table",
+        SHT_IA_64_EXT => "IA_64 extension bits",
+        SHT_IA_64_UNWIND => "IA_64 unwind section",
+        SHT_LOOS..=SHT_HIOS => "Reserved for operating system-specific semantics",
+        SHT_LOPROC..=SHT_HIPROC => "Reserved for processor-specific semantics",
+        SHT_LOUSER..=SHT_HIUSER => "Reserved for application-specific semantics",
+        _ => ""
+    }
+}
