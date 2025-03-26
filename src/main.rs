@@ -1,4 +1,4 @@
-mod elf_viewer;
+mod elf_printer;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
@@ -16,20 +16,20 @@ fn main() {
     let path: std::path::PathBuf = std::path::PathBuf::from(&args[args.len() - 1]);
     let file_bytes: Vec<u8> = std::fs::read(path).expect("Failed to read file.");
    
-    if !elf_viewer::check_magic(&file_bytes) {
+    if !elf_printer::check_magic(&file_bytes) {
         println!("Invalid ELF binary.");
         return;
     }
 
     if args.len() == 2 || args[1] == "-eh" || args[1] == "--elf-header" {
-        elf_viewer::print_elf_header(&file_bytes);
+        elf_printer::print_elf_header(&file_bytes);
     } else if args[1] == "-ph" || args[1] == "--program-header" {
         let index: u16 = match args[2].parse() {
             Ok(n) => { n },
             Err(_) => { u16::MAX }
         };
 
-        elf_viewer::print_program_header(&file_bytes, index);
+        elf_printer::print_program_header(&file_bytes, index);
     }
     
     return;
