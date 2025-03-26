@@ -1,2 +1,4 @@
-# ELF Printer
-ELF Printer is a CLI program that can be used to print information about ELF binaries.
+# About
+This is a CLI tool that prints information about ELF files. For certain fields, it will display the raw value aswell as what it actually means.
+
+![screen shot of elfa](./screenshot.png)
