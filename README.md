@@ -1,2 +1,2 @@
-# elf-viewer
-CLI program to view info about ELF files on Linux.
+# ELF Printer
+ELF Printer is a CLI program that can be used to print information about ELF binaries.
