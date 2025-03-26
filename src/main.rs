@@ -36,8 +36,15 @@ fn main() {
 }
 
 fn print_help() {
+    println!("Elf Viewer is a program that can be used to view information about ELF binaries.");
+    println!();
+    println!("Usage: elf-viewer [OPTIONS] [FILE PATH]");
+    println!();
     println!("You must pass a file path as the final argument.");
     println!("If you do not provide any other arugments, the ELF header will be printed.");
+    println!();
+    println!("Options:");
     println!("-h, --help: print this menu.");
     println!("-eh, --elf-header: display information from the file's ELF header.");
+    println!("-ph, --program-header [INDEX]: display information about a program header by index. If no index is provided, all program headers will be printed.");
 }
