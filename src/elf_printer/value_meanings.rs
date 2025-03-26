@@ -332,3 +332,98 @@ pub fn get_sh_type_meaning(val: u32) -> &'static str {
         _ => ""
     }
 }
+
+pub fn get_sh_flags_meaning(val: u32) -> String {
+    let mut result: String = String::from("");
+
+    if val == 0 {
+        result.push_str("None");
+        return result;
+    }
+
+    if val & SHF_WRITE != 0 {
+        result.push_str("Writable");
+    }
+
+    if val & SHF_ALLOC != 0 {
+        if result.len() > 0 {
+            result.push_str(", allocated");
+        } else {
+            result.push_str("Allocated");
+        }
+    }
+
+    if val & SHF_EXECINSTR != 0 {
+        if result.len() > 0 {
+            result.push_str(", executable");
+        } else {
+            result.push_str("Executable");
+        }
+    }
+
+    if val & SHF_MERGE != 0 {
+        if result.len() > 0 {
+            result.push_str(", mergeable");
+        } else {
+            result.push_str("Mergeable");
+        }
+    }
+
+    if val & SHF_STRINGS != 0 {
+        if result.len() > 0 {
+            result.push_str(", contains null-terminated strings");
+        } else {
+            result.push_str("Contains null-terminated strings");
+        }
+    }
+
+    if val & SHF_INFO_LINK != 0 {
+        if result.len() > 0 {
+            result.push_str(", sh_info is populated");
+        } else {
+            result.push_str("sh_info is populated");
+        }
+    }
+
+    if val & SHF_LINK_ORDER != 0 {
+        if result.len() > 0 {
+            result.push_str(", has special ordering requirements");
+        } else {
+            result.push_str("Has special orderings requirements");
+        }
+    }
+
+    if val & SHF_OS_NONCONFORMING != 0 {
+        if result.len() > 0 {
+            result.push_str(", requires special OS-specific processing");
+        } else {
+            result.push_str("Requires special OS-specific processing");
+        }
+    }
+
+    if val & SHF_GROUP != 0 {
+        if result.len() > 0 {
+            result.push_str(", member of section group");
+        } else {
+            result.push_str("Member of section group");
+        }
+    }
+
+    if val & SHF_TLS != 0 {
+        if result.len() > 0 {
+            result.push_str(", holds thread-local storage");
+        } else {
+            result.push_str("Holds thread-local storage");
+        }
+    }
+
+    if val & SHF_COMPRESSED != 0 {
+        if result.len() > 0 {
+            result.push_str(", compressed");
+        } else {
+            result.push_str("Compressed");
+        }
+    }
+
+    return result;
+}

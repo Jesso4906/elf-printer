@@ -245,7 +245,15 @@ fn print_section_header_64(header: &Elf64_Shdr, index: u16) {
     println!("Section header 64-bit (Elf64_Shdr)");
     println!("Index: {}", index);
     println!("Name index (sh_name): {}", header.sh_name);
-    println!("Section type (sh_type): {} ({:#04X})", value_meanings::get_sh_type_meaning(header.sh_type), header.sh_name);
+    println!("Section type (sh_type): {} ({:#04X})", value_meanings::get_sh_type_meaning(header.sh_type), header.sh_type);
+    println!("Section flags (sh_flags): {} ({:#04X})", value_meanings::get_sh_flags_meaning(header.sh_flags as u32), header.sh_flags);
+    println!("Address (sh_addr): {:#04X}", header.sh_addr);
+    println!("File offset (sh_offset): {:#04X}", header.sh_offset);
+    println!("Size (sh_size): {:#04X}", header.sh_size);
+    println!("Section header table index link (sh_link): {}", header.sh_link);
+    println!("Extra info (sh_info): {:#04X}", header.sh_info);
+    println!("Alignment (sh_addralign): {:#04X}", header.sh_addralign);
+    println!("Size of an entry (sh_entsize): {:#04X}", header.sh_entsize);
     println!();
 }
 
@@ -254,6 +262,14 @@ fn print_section_header_32(header: &Elf32_Shdr, index: u16) {
     println!("Section header 32-bit (Elf32_Shdr)");
     println!("Index: {}", index);
     println!("Name index (sh_name): {}", header.sh_name);
-    println!("Section type (sh_type): {} ({:#04X})", value_meanings::get_sh_type_meaning(header.sh_type), header.sh_name);
+    println!("Section type (sh_type): {} ({:#04X})", value_meanings::get_sh_type_meaning(header.sh_type), header.sh_type);
+    println!("Section flags (sh_flags): {} ({:#04X})", value_meanings::get_sh_flags_meaning(header.sh_flags as u32), header.sh_flags);
+    println!("Address (sh_addr): {:#04X}", header.sh_addr);
+    println!("File offset (sh_offset): {:#04X}", header.sh_offset);
+    println!("Size (sh_size): {:#04X}", header.sh_size);
+    println!("Section header table index link (sh_link): {}", header.sh_link);
+    println!("Extra info (sh_info): {:#04X}", header.sh_info);
+    println!("Alignment (sh_addralign): {:#04X}", header.sh_addralign);
+    println!("Size of an entry (sh_entsize): {:#04X}", header.sh_entsize);
     println!();
 }
