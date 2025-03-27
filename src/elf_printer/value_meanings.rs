@@ -427,3 +427,37 @@ pub fn get_sh_flags_meaning(val: u32) -> String {
 
     return result;
 }
+
+pub fn get_section_name_meaning(name: &str) -> &'static str {
+    match name {
+        ".bss" => "uninitialized data",
+        ".comment" => "version control information",
+        ".ctors" => "initialized pointers to C++ constructors",
+        ".data" | ".data1" => "initialized data",
+        ".debug" => "information for symbolic debugging",
+        ".dtors" => "initialized pointers to C++ destructors",
+        ".dynamic" => "dynamic linking information",
+        ".dynstr" | ".strtab" => "symbol table entry names",
+        ".fini" => "executable instructions for program termination",
+        ".gnu.version" => "version symbol table",
+        ".gnu.version_d" => "version symbol definitions",
+        ".gnu.version_r" => "version symbol needed elements",
+        ".got" => "global offset table",
+        ".hash" => "symbol hash table",
+        ".init" => "executable instructions for program initialization",
+        ".interp" => "pathname of a program interpreter",
+        ".line" => "line number information for symbolic debugging",
+        ".note" => "notes",
+        ".note.ABI-tag" => "expected run-time ABI",
+        ".note.gnu.build-id" => "unique build ID",
+        ".note.GNU-stack" => "stack attributes",
+        ".note.openbsd.ident" => "OpenBSD native executable marker",
+        ".plt" => "procedure linkage table",
+        ".relNAME" | ".relaNAME" => "relocation information",
+        ".rodata" | ".rodata1" => "read-only data",
+        ".shstrtab" => "section names",
+        ".symtab" => "symbol table",
+        ".text" => "executable instructions",
+        _ => "other",
+    }
+}

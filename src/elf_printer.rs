@@ -263,7 +263,7 @@ fn print_section_header_64(header: &Elf64_Shdr, index: u16, name: &str) {
     println!("Section header 64-bit (Elf64_Shdr)");
     println!("Index: {}", index);
     println!("Name index (sh_name): {}", header.sh_name);
-    println!("Section name: {}", name);
+    println!("Section name: '{}' ({})", name, value_meanings::get_section_name_meaning(name));
     println!("Section type (sh_type): {} ({:#04X})", value_meanings::get_sh_type_meaning(header.sh_type), header.sh_type);
     println!("Section flags (sh_flags): {} ({:#04X})", value_meanings::get_sh_flags_meaning(header.sh_flags as u32), header.sh_flags);
     println!("Address (sh_addr): {:#04X}", header.sh_addr);
@@ -281,7 +281,7 @@ fn print_section_header_32(header: &Elf32_Shdr, index: u16, name: &str) {
     println!("Section header 32-bit (Elf32_Shdr)");
     println!("Index: {}", index);
     println!("Name index (sh_name): {}", header.sh_name);
-    println!("Section name: {}", name);
+    println!("Section name: '{}' ({})", name, value_meanings::get_section_name_meaning(name));
     println!("Section type (sh_type): {} ({:#04X})", value_meanings::get_sh_type_meaning(header.sh_type), header.sh_type);
     println!("Section flags (sh_flags): {} ({:#04X})", value_meanings::get_sh_flags_meaning(header.sh_flags as u32), header.sh_flags);
     println!("Address (sh_addr): {:#04X}", header.sh_addr);
