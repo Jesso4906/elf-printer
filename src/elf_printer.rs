@@ -10,6 +10,9 @@ use libc::Elf32_Phdr;
 use libc::Elf64_Shdr;
 use libc::Elf32_Shdr;
 
+use libc::Elf64_Sym;
+use libc::Elf32_Sym;
+
 pub fn check_magic(bytes: &Vec<u8>) -> bool {
     return bytes.len() >= 4 && bytes[0] == 0x7F && bytes[1] == b'E' && bytes[2] == b'L' && bytes[3] == b'F';
 }
@@ -291,6 +294,20 @@ fn print_section_header_32(header: &Elf32_Shdr, index: u16, name: &str) {
     println!("Extra info (sh_info): {:#04X}", header.sh_info);
     println!("Alignment (sh_addralign): {:#04X}", header.sh_addralign);
     println!("Size of an entry (sh_entsize): {:#04X}", header.sh_entsize);
+    println!();
+}
+
+fn print_symbol_64(sym: &Elf64_Sym, index: u16, name: &str) {
+    println!();
+    println!("Symbol 64-bit (Elf64_Sym)");
+    println!("Index: {}", index);
+    println!("Name index (st_name): {}", sym.st_name);
+    println!("Symbol name: {}", name);
+    println!("Value (st_value): {:#04X}", sym.st_value);
+    println!("Size (st_size): {:#04X}", sym.st_size);
+    println!("Type (st_info): {} ({:#04X})", value_meanings::get_st_info_meaning(sym.st_info), sym.st_info);
+    println!("Visibility (st_other): {} ({:#04X})", value_meanings::get_st_other_meaning(sym.st_other), sym.st_other);
+    println!("Relevant section header table index (st_shndx): {}", sym.st_shndx);
     println!();
 }
 

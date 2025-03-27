@@ -37,7 +37,15 @@ fn main() {
         };
 
         elf_printer::print_section_header(&file_bytes, index);
+    } else if args[1] == "-s" || args[1] == "--symbol" {
+        let index: u16 = match args[2].parse() {
+            Ok(n) => { n },
+            Err(_) => { u16::MAX }
+        };
+
+        elf_printer::print_symbol(&file_bytes, index);
     }
+
     
     return;
 }

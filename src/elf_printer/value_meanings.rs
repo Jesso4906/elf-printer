@@ -461,3 +461,33 @@ pub fn get_section_name_meaning(name: &str) -> &'static str {
         _ => "other",
     }
 }
+
+pub fn get_st_info_meaning(val: u8) -> &'static str {
+    match val {
+        STT_NOTYPE => "Unspecified symbol type",
+        STT_OBJECT => "Data object symbol",
+        STT_FUNC => "Code object symbol",
+        STT_SECTION => "Section symbol",
+        STT_FILE => "File name symbol",
+        STT_COMMON => "Common data object symbol",
+        STT_TLS => "Thread-local data object symbol",
+        STT_GNU_IFUNC => "Indirect code object symbol",
+        STB_LOCAL => "Local symbol",
+        STB_GLOBAL => "Global symbol",
+        STB_WEAK => "Weak symbol",
+        STB_GNU_UNIQUE => "Unique symbol",
+        STT_LOOS..=STT_HIOS => "Operating system-specific semantics",
+        STT_LOPROC..=STT_HIPROC => "For processor-specific semantics",
+        _ => ""
+    }
+}
+
+pub fn get_st_other_meaning(val: u8) -> &'static str {
+    match val {
+        STV_DEFAULT => "Specified by symbol type",
+        STV_INTERNAL => "Defined by processor supplements",
+        STV_HIDDEN => "Not visible to other components",
+        STV_PROTECTED => "Visible to other components but not preemptable",
+        _ => ""
+    }
+}
