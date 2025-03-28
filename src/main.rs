@@ -46,9 +46,9 @@ fn main() {
 }
 
 fn print_help() {
-    println!("Elf Viewer is a program that can be used to view information about ELF binaries.");
+    println!("Elf Analyzer is a program that can be used to view information about ELF binaries.");
     println!();
-    println!("Usage: elf-viewer [OPTIONS] [FILE PATH]");
+    println!("Usage: elfa [OPTIONS] [FILE PATH]");
     println!();
     println!("You must pass a file path as the final argument.");
     println!("If you do not provide any other arugments, the ELF header will be printed.");
