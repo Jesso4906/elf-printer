@@ -1,6 +1,14 @@
 [package]
 name = "elfa"
 version = "0.1.0"
+authors = ["Bennett Jesso"]
+license = "GPL-3.0"
+description = "CLI tool that displays information about ELF files"
+readme = "README.md"
+homepage = "https://github.com/bfjesso/elfa"
+repository= "https://github.com/bfjesso/elfa"
+keywords = ["cli", "elf", "analyzer"]
+categories = ["command-line-utilities"]
 edition = "2024"
 
 [dependencies]
