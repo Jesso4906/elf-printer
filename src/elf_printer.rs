@@ -225,6 +225,7 @@ pub fn print_symbol(bytes: &Vec<u8>) {
             return;
         }
 
+        const SYM_SIZE: u64 = std::mem::size_of::<Elf64_Sym>() as u64;
         let mut  i: u64 = 0;
         while i < symtab_section.sh_size {
             let s_offset: isize = (symtab_section.sh_offset + i).try_into().unwrap();
@@ -232,8 +233,8 @@ pub fn print_symbol(bytes: &Vec<u8>) {
 
             let strndx: usize = (strtab_section.sh_offset + symbol.st_name as u64) as usize;
             let symbol_name: &str = get_string_from_vec(&bytes, strndx);
-            print_symbol_64(&symbol, symbol_name);
-            i = i + std::mem::size_of::<Elf64_Sym>() as u64;
+            print_symbol_64(&symbol, i / SYM_SIZE, symbol_name);
+            i = i + SYM_SIZE;
         }
     } else if bytes.len() >= size_of::<Elf32_Ehdr>() && bytes[EI_CLASS] == ELFCLASS32 {
         let elf_header: Elf32_Ehdr = unsafe { std::ptr::read(bytes.as_ptr() as *const Elf32_Ehdr) };
@@ -280,15 +281,16 @@ pub fn print_symbol(bytes: &Vec<u8>) {
             return;
         }
 
-        let mut  i: u32 = 0;
+        const SYM_SIZE: u32 = std::mem::size_of::<Elf32_Sym>() as u32;
+        let mut i: u32 = 0;
         while i < symtab_section.sh_size {
             let s_offset: isize = (symtab_section.sh_offset + i).try_into().unwrap();
             let symbol: Elf32_Sym = unsafe { std::ptr::read((bytes.as_ptr().offset(s_offset)) as *const Elf32_Sym) };
 
             let strndx: usize = (strtab_section.sh_offset + symbol.st_name as u32) as usize;
             let symbol_name: &str = get_string_from_vec(&bytes, strndx);
-            print_symbol_32(&symbol, symbol_name);
-            i = i + std::mem::size_of::<Elf32_Sym>() as u32;
+            print_symbol_32(&symbol, i / SYM_SIZE, symbol_name);
+            i = i + SYM_SIZE; 
         }
     } else {
         println!("File has unknown architecture or bytes buffer is too small.");
@@ -412,9 +414,10 @@ fn print_section_header_32(header: &Elf32_Shdr, index: u16, name: &str) {
     println!();
 }
 
-fn print_symbol_64(sym: &Elf64_Sym, name: &str) {
+fn print_symbol_64(sym: &Elf64_Sym, index: u64, name: &str) {
     println!();
     println!("Symbol 64-bit (Elf64_Sym)");
+    println!("Index: {}", index);
     println!("Name index (st_name): {}", sym.st_name);
     println!("Symbol name: {}", name);
     println!("Value (st_value): {:#04X}", sym.st_value);
@@ -425,9 +428,10 @@ fn print_symbol_64(sym: &Elf64_Sym, name: &str) {
     println!();
 }
 
-fn print_symbol_32(sym: &Elf32_Sym, name: &str) {
+fn print_symbol_32(sym: &Elf32_Sym, index: u32, name: &str) {
     println!();
     println!("Symbol 32-bit (Elf32_Sym)");
+    println!("Index: {}", index);
     println!("Name index (st_name): {}", sym.st_name);
     println!("Symbol name: {}", name);
     println!("Value (st_value): {:#04X}", sym.st_value);
