@@ -37,13 +37,8 @@ fn main() {
         };
 
         elf_printer::print_section_header(&file_bytes, index);
-    } else if args[1] == "-s" || args[1] == "--symbol" {
-        let index: u16 = match args[2].parse() {
-            Ok(n) => { n },
-            Err(_) => { u16::MAX }
-        };
-
-        elf_printer::print_symbol(&file_bytes, index);
+    } else if args[1] == "-s" || args[1] == "--dump-symbols" {
+        elf_printer::print_symbol(&file_bytes);
     }
 
     
@@ -63,4 +58,5 @@ fn print_help() {
     println!("-eh, --elf-header: display information from the file's ELF header.");
     println!("-ph, --program-header [INDEX]: display information about a program header by index. If no index is provided, all program headers will be printed.");
     println!("-sh, --section-header [INDEX]: display information about a section header by index. If no index is provided, all section headers will be printed.");
+    println!("-s, --dump-symbols: dump all symbols found in the .symtab section.");
 }

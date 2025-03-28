@@ -179,6 +179,121 @@ pub fn print_section_header(bytes: &Vec<u8>, index: u16) {
     }
 }
 
+pub fn print_symbol(bytes: &Vec<u8>) {
+    if bytes.len() >= size_of::<Elf64_Ehdr>() && bytes[EI_CLASS] == ELFCLASS64 {
+        let elf_header: Elf64_Ehdr = unsafe { std::ptr::read(bytes.as_ptr() as *const Elf64_Ehdr) };
+
+        if elf_header.e_shoff == 0 {
+            println!("File has no program header table.");
+            return;
+        }
+
+        if bytes.len() < (elf_header.e_shnum * elf_header.e_shentsize) as usize {
+            println!("Not enough bytes in buffer.");
+            return;
+        }
+       
+        // get .symtab and .strtab sections
+        let strs_offset: isize = (elf_header.e_shoff + (elf_header.e_shstrndx * elf_header.e_shentsize) as u64).try_into().unwrap();
+        let strs_section_header: Elf64_Shdr = unsafe { std::ptr::read((bytes.as_ptr().offset(strs_offset)) as *const Elf64_Shdr) };
+
+        let mut strtab_section: Elf64_Shdr = strs_section_header; // just using str_section_header to initialize this struct
+        strtab_section.sh_size = 0;
+
+        let mut symtab_section: Elf64_Shdr = strs_section_header;
+        symtab_section.sh_size = 0;
+
+        let mut  i: u16 = 0;
+        while i < elf_header.e_shnum && (strtab_section.sh_size == 0 || symtab_section.sh_size == 0) {
+            let s_offset: isize = (elf_header.e_shoff + (i * elf_header.e_shentsize) as u64).try_into().unwrap();
+            let section_header: Elf64_Shdr = unsafe { std::ptr::read((bytes.as_ptr().offset(s_offset)) as *const Elf64_Shdr) };
+
+            let strndx: usize = (strs_section_header.sh_offset + section_header.sh_name as u64) as usize;
+            let section_name: &str = get_string_from_vec(&bytes, strndx);
+            
+            if section_name == ".strtab" {
+               strtab_section = section_header;
+            } else if section_name == ".symtab" {
+               symtab_section = section_header;
+            }
+
+            i = i + 1;
+        }
+
+        if strtab_section.sh_size == 0 || symtab_section.sh_size == 0 {
+            println!("Failed to get .strtab or .symtab section.");
+            return;
+        }
+
+        let mut  i: u64 = 0;
+        while i < symtab_section.sh_size {
+            let s_offset: isize = (symtab_section.sh_offset + i).try_into().unwrap();
+            let symbol: Elf64_Sym = unsafe { std::ptr::read((bytes.as_ptr().offset(s_offset)) as *const Elf64_Sym) };
+
+            let strndx: usize = (strtab_section.sh_offset + symbol.st_name as u64) as usize;
+            let symbol_name: &str = get_string_from_vec(&bytes, strndx);
+            print_symbol_64(&symbol, symbol_name);
+            i = i + std::mem::size_of::<Elf64_Sym>() as u64;
+        }
+    } else if bytes.len() >= size_of::<Elf32_Ehdr>() && bytes[EI_CLASS] == ELFCLASS32 {
+        let elf_header: Elf32_Ehdr = unsafe { std::ptr::read(bytes.as_ptr() as *const Elf32_Ehdr) };
+
+        if elf_header.e_shoff == 0 {
+            println!("File has no program header table.");
+            return;
+        }
+
+        if bytes.len() < (elf_header.e_shnum * elf_header.e_shentsize) as usize {
+            println!("Not enough bytes in buffer.");
+            return;
+        }
+
+        // get .symtab and .strtab sections
+        let strs_offset: isize = (elf_header.e_shoff + (elf_header.e_shstrndx * elf_header.e_shentsize) as u32).try_into().unwrap();
+        let strs_section_header: Elf32_Shdr = unsafe { std::ptr::read((bytes.as_ptr().offset(strs_offset)) as *const Elf32_Shdr) };
+
+        let mut strtab_section: Elf32_Shdr = strs_section_header; // just using str_section_header to initialize this struct
+        strtab_section.sh_size = 0;
+
+        let mut symtab_section: Elf32_Shdr = strs_section_header;
+        symtab_section.sh_size = 0;
+
+        let mut  i: u16 = 0;
+        while i < elf_header.e_shnum && (strtab_section.sh_size == 0 || symtab_section.sh_size == 0) {
+            let s_offset: isize = (elf_header.e_shoff + (i * elf_header.e_shentsize) as u32).try_into().unwrap();
+            let section_header: Elf32_Shdr = unsafe { std::ptr::read((bytes.as_ptr().offset(s_offset)) as *const Elf32_Shdr) };
+
+            let strndx: usize = (strs_section_header.sh_offset + section_header.sh_name as u32) as usize;
+            let section_name: &str = get_string_from_vec(&bytes, strndx);
+            
+            if section_name == ".strtab" {
+               strtab_section = section_header;
+            } else if section_name == ".symtab" {
+               symtab_section = section_header;
+            }
+
+            i = i + 1;
+        }
+
+        if strtab_section.sh_size == 0 || symtab_section.sh_size == 0 {
+            println!("Failed to get .strtab or .symtab section.");
+            return;
+        }
+
+        let mut  i: u32 = 0;
+        while i < symtab_section.sh_size {
+            let s_offset: isize = (symtab_section.sh_offset + i).try_into().unwrap();
+            let symbol: Elf32_Sym = unsafe { std::ptr::read((bytes.as_ptr().offset(s_offset)) as *const Elf32_Sym) };
+
+            let strndx: usize = (strtab_section.sh_offset + symbol.st_name as u32) as usize;
+            let symbol_name: &str = get_string_from_vec(&bytes, strndx);
+            print_symbol_32(&symbol, symbol_name);
+            i = i + std::mem::size_of::<Elf32_Sym>() as u32;
+        }
+    } else {
+        println!("File has unknown architecture or bytes buffer is too small.");
+    }
+}
 fn print_elf_header_64(header: &Elf64_Ehdr) {
     println!();
     println!("ELF header 64-bit (Elf64_Ehdr)");
@@ -297,10 +412,22 @@ fn print_section_header_32(header: &Elf32_Shdr, index: u16, name: &str) {
     println!();
 }
 
-fn print_symbol_64(sym: &Elf64_Sym, index: u16, name: &str) {
+fn print_symbol_64(sym: &Elf64_Sym, name: &str) {
     println!();
     println!("Symbol 64-bit (Elf64_Sym)");
-    println!("Index: {}", index);
+    println!("Name index (st_name): {}", sym.st_name);
+    println!("Symbol name: {}", name);
+    println!("Value (st_value): {:#04X}", sym.st_value);
+    println!("Size (st_size): {:#04X}", sym.st_size);
+    println!("Type (st_info): {} ({:#04X})", value_meanings::get_st_info_meaning(sym.st_info), sym.st_info);
+    println!("Visibility (st_other): {} ({:#04X})", value_meanings::get_st_other_meaning(sym.st_other), sym.st_other);
+    println!("Relevant section header table index (st_shndx): {}", sym.st_shndx);
+    println!();
+}
+
+fn print_symbol_32(sym: &Elf32_Sym, name: &str) {
+    println!();
+    println!("Symbol 32-bit (Elf32_Sym)");
     println!("Name index (st_name): {}", sym.st_name);
     println!("Symbol name: {}", name);
     println!("Value (st_value): {:#04X}", sym.st_value);
