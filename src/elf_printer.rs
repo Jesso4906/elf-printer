@@ -179,7 +179,7 @@ pub fn print_section_header(bytes: &Vec<u8>, index: u16) {
     }
 }
 
-pub fn print_symbol(bytes: &Vec<u8>) {
+pub fn print_symbol(bytes: &Vec<u8>, name: &str) {
     if bytes.len() >= size_of::<Elf64_Ehdr>() && bytes[EI_CLASS] == ELFCLASS64 {
         let elf_header: Elf64_Ehdr = unsafe { std::ptr::read(bytes.as_ptr() as *const Elf64_Ehdr) };
 
@@ -233,7 +233,9 @@ pub fn print_symbol(bytes: &Vec<u8>) {
 
             let strndx: usize = (strtab_section.sh_offset + symbol.st_name as u64) as usize;
             let symbol_name: &str = get_string_from_vec(&bytes, strndx);
-            print_symbol_64(&symbol, i / SYM_SIZE, symbol_name);
+            if name == "" || name == symbol_name {
+                print_symbol_64(&symbol, i / SYM_SIZE, symbol_name);
+            }
             i = i + SYM_SIZE;
         }
     } else if bytes.len() >= size_of::<Elf32_Ehdr>() && bytes[EI_CLASS] == ELFCLASS32 {
@@ -289,7 +291,9 @@ pub fn print_symbol(bytes: &Vec<u8>) {
 
             let strndx: usize = (strtab_section.sh_offset + symbol.st_name as u32) as usize;
             let symbol_name: &str = get_string_from_vec(&bytes, strndx);
-            print_symbol_32(&symbol, i / SYM_SIZE, symbol_name);
+            if name == "" || name == symbol_name {
+                print_symbol_32(&symbol, i / SYM_SIZE, symbol_name);
+            }
             i = i + SYM_SIZE; 
         }
     } else {
