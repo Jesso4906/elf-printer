@@ -15,7 +15,7 @@ or
 
 git clone https://github.com/bfjesso/elfa.git
 cd elfa
-cargo build -r # build binary in in release mode
+cargo build -r # build binary in release mode
 cd target/release
 
 ```
